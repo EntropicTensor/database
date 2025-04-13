@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vegetarian Recipe Database</title>
+    <style>
+        /* Previous CSS remains the same */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .recipe-form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .recipe-form input, .recipe-form textarea {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+
+        .recipe-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .recipe-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vegetarian Recipe Database</h1>
+        
+        <!-- Add Recipe Form -->
+        <div class="recipe-form">
+            <h2>Add New Vegetarian Recipe</h2>
+            <form id="recipeForm">
+                <input type="text" id="recipeName" placeholder="Recipe name" required>
+                <textarea id="recipeIngredients" placeholder="Vegetarian ingredients (comma-separated)" required></textarea>
+                <textarea id="recipeInstructions" placeholder="Instructions" required></textarea>
+                <input type="text" id="recipeImage" placeholder="Image URL">
+                <button type="submit" class="button">Add Recipe</button>
+            </form>
+        </div>
+
+        <!-- Recipe Display -->
+        <h2>All Vegetarian Recipes</h2>
+        <div class="recipes-grid" id="recipesContainer">
+            <!-- Recipes will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Initialize vegetarian recipes in localStorage
+        if (!localStorage.getItem('vegetarianRecipes')) {
+            const initialRecipes = [
+                {
+                    id: 1,
+                    name: "Vegetable Stir-Fry",
+                    ingredients: ["tofu", "bell peppers", "broccoli", "carrots", "soy sauce", "sesame oil"],
+                    instructions: "1. Press and cube tofu\n2. Chop vegetables\n3. Heat oil in wok\n4. Stir-fry tofu first\n5. Add vegetables and sauce\n6. Cook until tender",
+                    image: "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1352&q=80"
+                },
+                {
+                    id: 2,
+                    name: "Lentil Curry",
+                    ingredients: ["red lentils", "coconut milk", "curry powder", "onion", "garlic", "ginger"],
+                    instructions: "1. Rinse lentils\n2. Sauté onions, garlic, and ginger\n3. Add spices\n4. Add lentils and coconut milk\n5. Simmer for 20 minutes",
+                    image: "https://images.unsplash.com/photo-1511690656952-34342bbe7c79?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                }
+            ];
+            localStorage.setItem('vegetarianRecipes', JSON.stringify(initialRecipes));
+        }
+
+        // Load vegetarian recipes
+        let recipes = JSON.parse(localStorage.getItem('vegetarianRecipes'));
+
+        // Display recipes
+        function displayRecipes() {
+            const container = document.getElementById('recipesContainer');
+            container.innerHTML = '';
+
+            recipes.forEach(recipe => {
+                const recipeCard = document.createElement('div');
+                recipeCard.className = 'recipe-card';
+                recipeCard.innerHTML = `
+                    ${recipe.image ? `<img src="${recipe.image}" alt="${recipe.name}">` : ''}
+                    <h3>${recipe.name}</h3>
+                    <h4>Ingredients:</h4>
+                    <ul>${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}</ul>
+                    <h4>Instructions:</h4>
+                    <p>${recipe.instructions.replace(/\n/g, '<br>')}</p>
+                `;
+                container.appendChild(recipeCard);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('recipeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newRecipe = {
+                id: Date.now(),
+                name: document.getElementById('recipeName').value,
+                ingredients: document.getElementById('recipeIngredients').value.split(',').map(i => i.trim()),
+                instructions: document.getElementById('recipeInstructions').value,
+                image: document.getElementById('recipeImage').value
+            };
+
+            recipes.push(newRecipe);
+            localStorage.setItem('vegetarianRecipes', JSON.stringify(recipes));
+            displayRecipes();
+            this.reset();
+        });
+
+        // Initial display
+        displayRecipes();
+    </script>
+</body>
+</html>
